@@ -1,0 +1,133 @@
+1)UPDATE debitos SET situacao_debito = 'Atrasado'
+WHERE datavencimento <= '2024-03-04' AND situacao_debito IN ('Negociado', 'Pago')
+
+2)update debitos
+set situacao_debito = 'Pendente'
+WHERE datavencimento > '2024-03-04' AND situacao_debito IN ('Negociado', 'Pago')
+
+3)UPDATE debitos 
+SET datavencimento = DATE_SUB(datavencimento, INTERVAL 5 YEAR)
+WHERE situacao_debito = 'Negociado'
+
+4)select nome, email, telefone from pessoa
+
+5)select * from produto where preco_unitario > 100
+
+6)select * from venda where data_venda = '2024-03-04'
+
+7)select pessoa.nome, pessoa.data_nascimento, (2024 - YEAR(pessoa.data_nascimento)) as idade
+from fornecedor
+left join pessoa on pessoa.id_pessoa = fornecedor.id_fornecedor
+where fornecedor.id_fornecedor not in(select produto.id_fornecedor from produto)
+
+8)select * from cliente where id_cliente in (select id_cliente from debitos where situacao_debito = 'Vencido')
+
+9)select receita.id_receita,
+receita.data_receita,
+item_receita.posologia
+from item_receita
+right join receita on receita.id_receita = item_receita.id_receita
+right join medicamentos on medicamentos.id_medicamento = item_receita.id_medicamento
+
+10)select d.id_cliente,
+d.situacao_debito,
+(select sum(coalesce(valor_total,0)) from debitos where situacao_debito = 'Atrasado' and id_cliente = d.id_cliente) as valor_atrasado
+(select sum(coalesce(valor_total,0)) from debitos where situacao_debito = 'Pago' and id_cliente = d.id_cliente) as valor_pago
+from debitos d
+where d.situacao_debito in ('Atrasado', 'Pago')
+group by d.id_cliente, d.situacao_debito
+order by 2,3 desc
+limit 10
+
+11)update produto
+set preco_unitario = preco_unitario * 1.1
+where quantidade_estoque < 10
+
+12) entrega não existe
+
+13)update debitos
+set situacao_debito = 'Pago'
+where id_debito in (select id_debito from pagamento)
+and situacao_debito = 'Atrasado'
+
+14)carrinho de compras não existe
+
+15)select * from venda where data_venda >= "2023-01-01" and data_venda < "2024-01-01"
+
+16)select * from produto where quantidade_estoque >5 and quantidade_estoque <20
+
+17)select * from pessoa where nome like "A%"
+
+18)SELECT produto.*
+FROM produto
+LEFT JOIN itensvenda ON produto.id_produto = itensvenda.id_produto
+WHERE itensvenda.id_produto IS NULL
+
+19)SELECT produto.nome, itensvenda.quantidade, itensvenda.valor_unitario
+FROM pessoa
+JOIN itensvenda ON pessoa.id_pessoa = itensvenda.id_pessoa
+JOIN produto ON itensvenda.id_produto = produto.id_produto
+WHERE pessoa.nome IN ('Jordan Jimenez', 'Julie Becker')
+
+20)SELECT cliente.id_cliente, pessoa.nome
+  FROM cliente 
+  left join pessoa on pessoa.id_pessoa = cliente.id_pessoa
+  union
+  SELECT fornecedor.id_fornecedor, pessoa.nome
+  FROM fornecedor 
+  left join pessoa on pessoa.id_pessoa = fornecedor.id_pessoa
+
+
+21)SELECT venda.*, pessoa.*, forma_pagamento.*
+FROM venda
+JOIN pessoa ON venda.id_pessoa = pessoa.id_pessoa
+JOIN forma_pagamento ON venda.id_forma_pagamento = forma_pagamento.id_forma_pagamento
+
+22)SELECT * FROM itensvenda WHERE id_venda IN (SELECT id_venda FROM historico_compras_cliente WHERE id_cliente = 2)
+
+23)select pessoa.nome AS nome, 
+YEAR(CURRENT_DATE) - YEAR(pessoa.data_nascimento) + 1 AS idade
+FROM pessoa WHERE id_pessoa IN (SELECT id_pessoa FROM cliente) OR id_pessoa IN (SELECT id_pessoa FROM funcionario)
+
+24)select * from endereco where id_bairro and id_logradouro in(select id_pessoa from endereco)
+
+25)select * from produto where preco_unitario > (select AVG(preco_unitario) from produto)
+
+26)select * from pessoa where id_pessoa in (select id_pessoa from endereco where ID_municipio in (select id_municipio from municipio where populacao > 1000000))
+
+27)select fornecedor.id_fornecedor, produto.nome, itensvenda.quantidade
+from produto
+inner join itensvenda on itensvenda.id_produto = produto.id_produto
+inner join fornecedor on fornecedor.id_fornecedor = produto.id_fornecedor
+
+28)select * from cliente
+where id_cliente in (select id_cliente from pagamento where id_venda in (select id_venda from venda where valor_total > 500))
+
+29)select pessoa.nome, municipio.nome, bairro.nome, logradouro.nome
+from endereco inner join municipio on municipio.ID_municipio = endereco.ID_municipio
+inner join pessoa on pessoa.id_pessoa = endereco.id_pessoa
+inner join bairro on bairro.id_bairro = endereco.id_bairro
+inner join logradouro on logradouro.id_logradouro = endereco.ID_logradouro
+
+30)select produto.nome, produto.preco_unitario, pessoa.nome
+from fornecedor left join produto on produto.id_fornecedor = fornecedor.id_fornecedor
+left join pessoa on pessoa.id_pessoa = fornecedor.id_pessoa
+
+31)select * from produto order by quantidade_estoque desc
+
+32)select * from venda order by valor_total ASC
+
+33)select * from produto
+where quantidade_estoque < (select AVG(quantidade_estoque) from produto)
+
+34)SELECT telefone, COUNT(telefone)
+FROM pessoa
+GROUP BY telefone
+HAVING COUNT(telefone) > 1
+
+35)update produto set preco_unitario = preco_unitario * 1.1 
+where id_fornecedor in (select id_fornecedor from fornecedor 
+where id_pessoa in (select id_pessoa from endereco 
+where ID_municipio in (select ID_municipio from municipio where uf = 'SP')))
+
+36)select * from venda where id_venda in (select id_venda from debitos where situacao_debito = 'Negociado')
